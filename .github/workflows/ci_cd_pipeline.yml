@@ -8,9 +8,8 @@ on:
   schedule:
     - cron: '0 1 * * *'
 
-
 permissions:
-      contents: read # This is required for actions/checkout
+  contents: read # This is required for actions/checkout
 
 jobs:
   image-release:
@@ -24,28 +23,13 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
+      # Uncomment and modify the Docker installation step if needed
       # - name: Install Docker
       #   run: |
       #     # Remove existing Docker packages
       #     sudo apt-get remove -y docker.io docker-doc docker-compose docker-compose-v2 podman-docker containerd runc
-
-      #     # Add Docker's official GPG key
-      #     sudo apt-get update
-      #     sudo apt-get install -y ca-certificates curl gnupg
-      #     sudo install -m 0755 -d /etc/apt/keyrings
-      #     curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
-      #     sudo chmod a+r /etc/apt/keyrings/docker.gpg
-
-      #     # Add the Docker repository to Apt sources
-      #     echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
-      #     sudo apt-get update
-
-      #     # Install Docker
-      #     sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
-          
-      #     # Start and enable Docker service
-      #     sudo systemctl start docker
-      #     sudo systemctl enable docker
+      #     
+      #     # ... (rest of the Docker installation steps)
 
       - name: Install grype
         run: |
@@ -57,22 +41,18 @@ jobs:
           sudo rm -rf /usr/local/go && sudo tar -C /usr/local -xzf go1.21.5.linux-amd64.tar.gz
           export PATH=$PATH:/usr/local/go/bin
 
-      # - name: Install Cosign
-      #   run: |
-      #     go install github.com/sigstore/cosign/v2/cmd/cosign@latest
-
       - name: Install jq
         run: |
           sudo apt-get install -y jq
 
-      name: Install Cosign
-      - uses: sigstore/cosign-installer@11086d25041f77fe8fe7b9ea4e48e3b9192b8f19 
-        run: | 
+      - name: Install Cosign
+        uses: sigstore/cosign-installer@11086d25041f77fe8fe7b9ea4e48e3b9192b8f19
+        with:
+          cosign-version: v1.0.0  # Specify the desired version
+
+      - name: Verify Signatures with Cosign
+        run: |
           cosign verify \
-          public.ecr.aws/t4s8c0c3/${{ inputs.image }}:latest \
-          --certificate-identity https://github.com/initializ/secure-images/.github/workflows/release.yml@refs/heads/main \
-          --certificate-oidc-issuer https://token.actions.githubusercontent.com | jq
-
-      
-
-
+            public.ecr.aws/t4s8c0c3/${{ inputs.image }}:latest \
+            --certificate-identity https://github.com/initializ/secure-images/.github/workflows/release.yml@refs/heads/main \
+            --certificate-oidc-issuer https://token.actions.githubusercontent.com | jq
