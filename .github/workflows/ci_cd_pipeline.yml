@@ -59,6 +59,10 @@ jobs:
       - name: See the SBOM
         run: |
           ls
+      
+      - name: Grype the SBOM
+        run: |
+          grype sbom-index.spdx.json
      
 
 
