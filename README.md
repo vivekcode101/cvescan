@@ -1,1 +1,1 @@
-# cvescan
+# initializ-scanner
