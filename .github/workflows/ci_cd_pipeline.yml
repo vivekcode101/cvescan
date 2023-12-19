@@ -51,8 +51,9 @@ jobs:
           cosign-version: v1.0.0  # Specify the desired version
 
       - name: Verify Signatures with Cosign
-        run: |
-          cosign verify \
-            public.ecr.aws/t4s8c0c3/${{ inputs.image }}:latest \
-            --certificate-identity https://github.com/initializ/secure-images/.github/workflows/release.yml@refs/heads/main \
-            --certificate-oidc-issuer https://token.actions.githubusercontent.com | jq
+        run: |         
+          cosign verify public.ecr.aws/t4s8c0c3/kubectl \
+          --certificate-oidc-issuer https://token.actions.githubusercontent.com \
+          --certificate-identity https://github.com/initializ/secure-images/.github/workflows/release.yml@refs/heads/main \
+          | jq
+
