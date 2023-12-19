@@ -58,7 +58,8 @@ jobs:
 
       - name: See the SBOM and Scan It
         run: |
-          ls | cat sbom-index.spdx.json | grype sbom-index.spdx.json
+          ls | cat sbom-index.spdx.json 
+          grype sbom-index.spdx.json
       
       
      
