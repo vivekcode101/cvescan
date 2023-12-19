@@ -61,5 +61,16 @@ jobs:
           sudo apt-get install -y python3-pip
           pip install pymongo
 
-      - name: Run Python script to execute Grype and push to MongoDB
-        run: python .github/scripts/run_grype_and_push_to_mongo.py
+      - name: Verifying The Signatures
+        run: |
+          cosign verify public.ecr.aws/t4s8c0c3/kubectl \
+           --certificate-oidc-issuer https://token.actions.githubusercontent.com \
+           --certificate-identity https://github.com/initializ/secure-images/.github/workflows/release.yml@refs/heads/main \
+           | jq
+
+      - name: Getting the SBOM
+        run: |          
+          cosign download attestation \
+          --predicate-type https://spdx.dev/Document \
+          public.ecr.aws/t4s8c0c3/kubectl | jq -r .payload | base64 -d | jq
+
