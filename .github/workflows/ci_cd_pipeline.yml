@@ -52,8 +52,12 @@ jobs:
       #   run: |
       #     go install github.com/sigstore/cosign/v2/cmd/cosign@latest
 
-      - name: cosign-installer
+      name: Install Cosign
+    steps:
+      - name: Install Cosign
         uses: sigstore/cosign-installer@v3.3.0
+      - name: Check install!
+        run: cosign version
   
       - name: Install jq
         run: |
