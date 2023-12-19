@@ -54,6 +54,11 @@ jobs:
         run: |                  
           cosign download attestation \
           --predicate-type https://spdx.dev/Document \
-          public.ecr.aws/t4s8c0c3/kubectl | jq -r .payload | base64 -d | jq
+          public.ecr.aws/t4s8c0c3/kubectl | jq -r .payload | base64 -d | jq > sbom-index.spdx.json
+
+      - name: See the SBOM
+        run: |
+          ls
+     
 
 
