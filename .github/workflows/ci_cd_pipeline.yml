@@ -54,13 +54,19 @@ jobs:
         run: |                  
           cosign download attestation \
           --predicate-type https://spdx.dev/Document \
-          public.ecr.aws/t4s8c0c3/kubectl | jq -r .payload | base64 -d | jq 
+          public.ecr.aws/t4s8c0c3/kubectl | jq -r .payload | base64 -d | jq > sbom-index.spdx.json
 
-      - name: See the SBOM and Scan It
+      - name: See the SBOM 
         run: |
-          ls 
-      
-      
-     
+          ls
+          cat sbom-index.spdx.json  # Print the contents for debugging purposes
 
+      - name: Install SPDX Tools
+        run: |
+          sudo apt-get install spdx-tools
 
+      - name: Validate SBOM with SPDX Tools
+        run: spdxvalidate sbom-index.spdx.json
+
+      - name: Run Grype Scan
+        run: grype -sbom-file sbom-index.spdx.json
