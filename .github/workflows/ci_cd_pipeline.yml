@@ -52,26 +52,16 @@ jobs:
       #   run: |
       #     go install github.com/sigstore/cosign/v2/cmd/cosign@latest
 
-      - name: Install Cosign
-        run: |
-          go install github.com/sigstore/cosign/v2/cmd/cosign@latest
-
-
+      - name: cosign-installer
+        uses: sigstore/cosign-installer@v3.3.0
+  
       - name: Install jq
         run: |
           sudo apt-get install -y jq
 
-      - name: Install pymongo
-        run: |
-          sudo apt-get install -y python3-pip
-          pip install pymongo
-
       - name: Verifying The Signatures
         run: |
-          cosign verify public.ecr.aws/t4s8c0c3/kubectl \
-           --certificate-oidc-issuer https://token.actions.githubusercontent.com \
-           --certificate-identity https://github.com/initializ/secure-images/.github/workflows/release.yml@refs/heads/main \
-           | jq
+          cosign verify public.ecr.aws/t4s8c0c3/kubectl  --certificate-oidc-issuer https://token.actions.githubusercontent.com  --certificate-identity https://github.com/initializ/secure-images/.github/workflows/release.yml@refs/heads/main  | jq
 
       - name: Getting the SBOM
         run: |          
