@@ -1,11 +1,13 @@
 name: CI/CD Pipeline with Grype
+
 on:
   push:
     branches:
       - main
   workflow_dispatch:
   schedule:
-    - cron: '0 1 * * *' 
+    - cron: '0 1 * * *'
+
 jobs:
   vulnerability_scanning:
     runs-on: ubuntu-latest
@@ -13,32 +15,35 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      -name: Install Docker
+      - name: Install Docker
         run: |
-           apt install docker.io
-           systemctl start docker
-           systemctl enable docker
-     
+          sudo apt-get update
+          sudo apt-get install docker.io
+          sudo systemctl start docker
+          sudo systemctl enable docker
+
       - name: Install grype
         run: |
-          bash
           curl -sSfL https://raw.githubusercontent.com/anchore/grype/main/install.sh | sh -s -- -b /usr/local/bin
-      
-      - name : Install go
+
+      - name: Install go
         run: |
-           wget https://golang.org/dl/go1.21.5.linux-amd64.tar.gz
-           rm -rf /usr/local/go && tar -C /usr/local -xzf go1.21.5.linux-amd64.tar.gz
-           export PATH=$PATH:/usr/local/go/bin
+          wget https://golang.org/dl/go1.21.5.linux-amd64.tar.gz
+          sudo rm -rf /usr/local/go && sudo tar -C /usr/local -xzf go1.21.5.linux-amd64.tar.gz
+          export PATH=$PATH:/usr/local/go/bin
 
       - name: Install Cosign
         run: |
-           go install github.com/sigstore/cosign/v2/cmd/cosign@latest
+          go install github.com/sigstore/cosign/v2/cmd/cosign@latest
 
       - name: Install jq
         run: |
-           apt-get install jq
-          
+          sudo apt-get install jq
+
       - name: Install pymongo
-        run: pip install pymongo
+        run: |
+          sudo apt-get install python3-pip
+          pip install pymongo
+
       - name: Run Python script to execute Grype and push to MongoDB
         run: python .github/scripts/run_grype_and_push_to_mongo.py
