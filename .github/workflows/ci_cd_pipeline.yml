@@ -12,11 +12,31 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
+
+      -name: Install Docker
+        run: |
+           apt install docker.io
+           systemctl start docker
+           systemctl enable docker
      
       - name: Install grype
         run: |
           bash
           curl -sSfL https://raw.githubusercontent.com/anchore/grype/main/install.sh | sh -s -- -b /usr/local/bin
+      
+      - name : Install go
+        run: |
+           wget https://golang.org/dl/go1.21.5.linux-amd64.tar.gz
+           rm -rf /usr/local/go && tar -C /usr/local -xzf go1.21.5.linux-amd64.tar.gz
+           export PATH=$PATH:/usr/local/go/bin
+
+      - name: Install Cosign
+        run: |
+           go install github.com/sigstore/cosign/v2/cmd/cosign@latest
+
+      - name: Install jq
+        run: |
+           apt-get install jq
           
       - name: Install pymongo
         run: pip install pymongo
