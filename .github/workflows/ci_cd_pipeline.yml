@@ -62,7 +62,7 @@ jobs:
       
       - name: Grype the SBOM
         run: |
-          grype sbom-index.spdx.json
+          grype sbom:sbom-index.spdx.json
      
 
 
