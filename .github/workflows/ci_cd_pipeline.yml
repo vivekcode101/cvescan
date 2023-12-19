@@ -8,35 +8,44 @@ on:
   schedule:
     - cron: '0 1 * * *'
 
+
+permissions:
+      contents: read # This is required for actions/checkout
+
 jobs:
-  vulnerability_scanning:
+  image-release:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+        working-directory: .
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: Install Docker
-        run: |
-          # Remove existing Docker packages
-          sudo apt-get remove -y docker.io docker-doc docker-compose docker-compose-v2 podman-docker containerd runc
+      # - name: Install Docker
+      #   run: |
+      #     # Remove existing Docker packages
+      #     sudo apt-get remove -y docker.io docker-doc docker-compose docker-compose-v2 podman-docker containerd runc
 
-          # Add Docker's official GPG key
-          sudo apt-get update
-          sudo apt-get install -y ca-certificates curl gnupg
-          sudo install -m 0755 -d /etc/apt/keyrings
-          curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
-          sudo chmod a+r /etc/apt/keyrings/docker.gpg
+      #     # Add Docker's official GPG key
+      #     sudo apt-get update
+      #     sudo apt-get install -y ca-certificates curl gnupg
+      #     sudo install -m 0755 -d /etc/apt/keyrings
+      #     curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+      #     sudo chmod a+r /etc/apt/keyrings/docker.gpg
 
-          # Add the Docker repository to Apt sources
-          echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
-          sudo apt-get update
+      #     # Add the Docker repository to Apt sources
+      #     echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+      #     sudo apt-get update
 
-          # Install Docker
-          sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+      #     # Install Docker
+      #     sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
           
-          # Start and enable Docker service
-          sudo systemctl start docker
-          sudo systemctl enable docker
+      #     # Start and enable Docker service
+      #     sudo systemctl start docker
+      #     sudo systemctl enable docker
 
       - name: Install grype
         run: |
